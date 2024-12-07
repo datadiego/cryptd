@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hashiko</title>
+    <style>
+        *{
+            font-family: monospace;
+            background: black;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <form action="/encrypt">
+        <select name="algorithm" id="algorithm"></select>
+        <input type="text" name="text" id="text">
+        <button type="submit">Encrypt</button>
+    </form>
+    <p id="respuesta"></p>
+    <script>
+        const algorithm = document.getElementById('algorithm');
+        const text = document.getElementById('text');
+        const respuesta = document.getElementById('respuesta');
+        fetch('/algorithms')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(algo => {
+                    const option = document.createElement('option');
+                    option.value = algo;
+                    option.textContent = algo;
+                    algorithm.appendChild(option);
+                });
+            });
+
+        document.querySelector('form').addEventListener('submit', e => {
+            e.preventDefault();
+            fetch(`/encrypt/${algorithm.value}?input=${text.value}`)
+                .then(response => response.json())
+                .then(data => {
+                    respuesta.textContent = data.hashed;
+                });
+        });
+    </script>
+</body>
+</html>
